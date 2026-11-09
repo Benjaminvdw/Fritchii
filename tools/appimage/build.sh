@@ -23,9 +23,9 @@ build=build/appimage
 tools=build/appimage-tools
 appdir=build/AppDir
 
-# The update checker only knows the Windows zip, which an AppImage cannot install, so it stays off.
+# FRITCHII_APPIMAGE points the updater at this fork's fritchii-linux-v<N> releases.
 profile="-fprofile-use=/src/eglantine.profdata -Wno-backend-plugin \
-    -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date"
+    -Wno-profile-instr-unprofiled -Wno-profile-instr-out-of-date -DFRITCHII_APPIMAGE"
 # Configure once: a second configure cannot find the bundled OpenSSL.
 [ -f "$build/build.ninja" ] || cmake -S . -B "$build" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
@@ -39,7 +39,7 @@ profile="-fprofile-use=/src/eglantine.profdata -Wno-backend-plugin \
     -DYUZU_USE_BUNDLED_SDL3=ON \
     -DVulkanHeaders_FORCE_BUNDLED=ON \
     -DVulkanUtilityLibraries_FORCE_BUNDLED=ON \
-    -DENABLE_UPDATE_CHECKER=OFF \
+    -DENABLE_UPDATE_CHECKER=ON \
     -DLICHII_BUILD_PLATFORM=linux-x86_64 \
     -DUSE_DISCORD_PRESENCE=OFF \
     -DCMAKE_C_COMPILER="clang-$LLVM_VERSION" \
@@ -86,7 +86,7 @@ done
 rm -rf "$appdir"
 # The shader preparation recipes ship only in the Windows release. The program reads them from
 # recipes/ next to itself.
-zip="$tools/windows-release.zip"
+zip="$tools/windows-release-v$version.zip"
 [ -s "$zip" ] || curl -fsSL -o "$zip" \
     "https://github.com/Frizti/Fritchii/releases/download/fritchii-v$version/Fritchii-v$version-Windows-x64.zip"
 mkdir -p "$appdir/usr/bin/recipes"

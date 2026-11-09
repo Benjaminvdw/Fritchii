@@ -33,9 +33,19 @@ std::optional<u64> ParseBuildNumber(std::string_view tag) {
     return number;
 }
 
+#ifdef FRITCHII_APPIMAGE
+// Linux AppImages are published by the fork that ports them, under their own tags.
+constexpr std::string_view ReleaseOwner = "Benjaminvdw";
+constexpr std::string_view ReleaseRepo = "Benjaminvdw/Fritchii";
+constexpr std::array RepoNames{std::string_view{"Fritchii"}};
+constexpr std::array TagPrefixes{std::string_view{"fritchii-linux-v"}};
+#else
+constexpr std::string_view ReleaseOwner = "Frizti";
 constexpr std::string_view ReleaseRepo = "Frizti/Lichii";
 // Download URLs name the repository by its current name; GitHub redirects the old one.
 constexpr std::array RepoNames{std::string_view{"Lichii"}, std::string_view{"Fritchii"}};
+constexpr std::array TagPrefixes{std::string_view{"fritchii-v"}, std::string_view{"frizti-v"}};
+#endif
 
 std::optional<u32> ParseNumber(std::string_view text) {
     if (text.empty() || (text.size() > 1 && text.front() == '0') ||
@@ -51,7 +61,7 @@ std::optional<u32> ParseNumber(std::string_view text) {
 }
 
 CheckResult CheckFritchii([[maybe_unused]] const FritchiiVersion& current) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(FRITCHII_APPIMAGE)
     // Fritchii only publishes Windows packages.
     return {};
 #else
@@ -184,7 +194,7 @@ std::optional<FritchiiVersion> RunningVersion() {
 }
 
 std::optional<FritchiiVersion> ParseFritchiiTag(std::string_view tag) {
-    for (const std::string_view prefix : {"fritchii-v", "frizti-v"}) {
+    for (const std::string_view prefix : TagPrefixes) {
         if (tag.starts_with(prefix)) {
             return ParseFritchiiVersion(tag.substr(prefix.size()));
         }
@@ -193,7 +203,11 @@ std::optional<FritchiiVersion> ParseFritchiiTag(std::string_view tag) {
 }
 
 std::string FritchiiAssetName(const FritchiiVersion& version) {
+#ifdef FRITCHII_APPIMAGE
+    return fmt::format("Fritchii-v{}-Linux-x86_64.AppImage", version.ToString());
+#else
     return fmt::format("Fritchii-v{}-Windows-x64.zip", version.ToString());
+#endif
 }
 
 Source DefaultSource() {
@@ -251,8 +265,8 @@ std::optional<Common::Net::Asset> SelectFritchiiAsset(const Common::Net::Release
             }
         } else {
             for (const auto repo : RepoNames) {
-                if (url == fmt::format("https://github.com/Frizti/{}/releases/download/{}/{}", repo,
-                                       release.tag, filename)) {
+                if (url == fmt::format("https://github.com/{}/{}/releases/download/{}/{}",
+                                       ReleaseOwner, repo, release.tag, filename)) {
                     origin = "https://github.com";
                 }
             }
