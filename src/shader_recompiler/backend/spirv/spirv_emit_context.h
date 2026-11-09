@@ -381,6 +381,7 @@ public:
     std::array<Id, 30> patches{};
 
     std::array<Id, 8> frag_color{};
+    std::array<u8, 8> frag_color_written{}; ///< Component mask per render target, so far
     Id sample_mask{};
     Id frag_depth{};
 

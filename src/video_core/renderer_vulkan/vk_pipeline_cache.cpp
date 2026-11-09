@@ -3023,6 +3023,7 @@ u64 SpirvSettingsStamp() {
             << 17;
     bits |= static_cast<u64>(Settings::values.fix_bloom_effects.GetValue() ? 1 : 0) << 18;
     bits |= static_cast<u64>(Settings::values.renderer_debug.GetValue() ? 1 : 0) << 19;
+    bits |= u64{1} << 20; // Fragment NaN guard: kept SPIR-V and warm-ups from before it are stale.
     return bits;
 }
 

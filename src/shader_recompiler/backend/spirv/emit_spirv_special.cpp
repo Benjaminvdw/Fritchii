@@ -91,6 +91,36 @@ void AlphaTest(EmitContext& ctx) {
     ctx.OpKill();
     ctx.AddLabel(true_label);
 }
+
+/// Shaders given bad lighting data output NaN, which bloom spreads into huge white shapes
+/// (zortos293/Lichii#849, #867). Clearing the whole pixel, alpha too, makes blended draws add
+/// nothing; opaque ones go black.
+void GuardFragColors(EmitContext& ctx) {
+    for (u32 index = 0; index < ctx.frag_color.size(); ++index) {
+        const u32 written{ctx.frag_color_written[index]};
+        if (written == 0 || ctx.runtime_info.color_output_types[index] != AttributeType::Float) {
+            continue;
+        }
+        std::array<Id, 4> pointers{};
+        std::array<Id, 4> values{};
+        Id any_nan{ctx.false_value};
+        for (u32 component = 0; component < 4; ++component) {
+            if (((written >> component) & 1) == 0) {
+                continue;
+            }
+            pointers[component] =
+                ctx.OpAccessChain(ctx.output_f32, ctx.frag_color[index], ctx.Const(component));
+            values[component] = ctx.OpLoad(ctx.F32[1], pointers[component]);
+            any_nan = ctx.OpLogicalOr(ctx.U1, any_nan, ctx.OpIsNan(ctx.U1, values[component]));
+        }
+        for (u32 component = 0; component < 4; ++component) {
+            if (((written >> component) & 1) != 0) {
+                ctx.OpStore(pointers[component], ctx.OpSelect(ctx.F32[1], any_nan,
+                                                              ctx.f32_zero_value, values[component]));
+            }
+        }
+    }
+}
 } // Anonymous namespace
 
 void EmitPrologue(EmitContext& ctx) {
@@ -151,6 +181,7 @@ void EmitEpilogue(EmitContext& ctx) {
     }
     if (ctx.stage == Stage::Fragment) {
         AlphaTest(ctx);
+        GuardFragColors(ctx);
     }
 }
 

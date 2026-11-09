@@ -480,6 +480,7 @@ void EmitSetPatch(EmitContext& ctx, IR::Patch patch, Id value) {
 }
 
 void EmitSetFragColor(EmitContext& ctx, u32 index, u32 component, Id value) {
+    ctx.frag_color_written[index] |= static_cast<u8>(1U << component);
     const Id component_id{ctx.Const(component)};
     const AttributeType type{ctx.runtime_info.color_output_types[index]};
     if (type == AttributeType::Float) {
