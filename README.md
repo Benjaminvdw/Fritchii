@@ -18,15 +18,15 @@ An unofficial Linux AppImage of [Fritchii](https://github.com/Frizti/Fritchii), 
 
 That's one game on one PC so far. Other games and AMD or Intel GPUs are untested, and rendering bugs or stutters are still possible.
 
-**White patches in Ocarina of Time:** on v5.3, large glowing white patches could appear at random and cause big lag spikes. Some lighting calculations produce invalid pixels, and the game's bloom spreads them across the screen. v5.4 for Linux stops that spreading, but this fix is still being tested. The bad lighting data behind it isn't solved, so an affected solid object can turn black instead. Restarting the game clears it for a while. If you still get white patches or black shapes on v5.4, please report where it happened, along with your GPU and driver version.
+**White patches in Ocarina of Time:** on v5.3, large glowing white patches could appear at random and cause big lag spikes. Some lighting calculations produce invalid pixels, and the game's bloom spreads them across the screen. Linux builds from v5.4 on stop that spreading, but this fix is still being tested. The bad lighting data behind it isn't solved, so an affected solid object can turn black instead. Restarting the game clears it for a while. If you still get white patches or black shapes on v5.4 or newer, please report where it happened, along with your GPU and driver version.
 
 ## Download
 
-**[Get the latest release](https://github.com/Benjaminvdw/Fritchii/releases/tag/fritchii-linux-v5.4)**
+**[Get the latest release](https://github.com/Benjaminvdw/Fritchii/releases/tag/fritchii-linux-v5.5)**
 
 ```bash
-chmod +x Fritchii-v5.4-Linux-x86_64.AppImage
-./Fritchii-v5.4-Linux-x86_64.AppImage
+chmod +x Fritchii-v5.5-Linux-x86_64.AppImage
+./Fritchii-v5.5-Linux-x86_64.AppImage
 ```
 
 The first start prepares shaders once, which takes about 15 minutes.
@@ -41,7 +41,7 @@ On a Wayland desktop the first start shows a "Wayland Detected!" warning. Fritch
 - A working Vulkan driver
 - Normal desktop audio (ALSA)
 
-The v5 AppImage started on Ubuntu 24.04, Debian 13, Fedora 45 and Arch. The v5.3 AppImage has been started on Debian 13 and CachyOS, and v5.4 on CachyOS.
+The v5 AppImage started on Ubuntu 24.04, Debian 13, Fedora 45 and Arch. The v5.3 AppImage has been started on Debian 13 and CachyOS, v5.4 on CachyOS, and v5.5 in an Ubuntu 24.04 container.
 
 ## Updates
 
