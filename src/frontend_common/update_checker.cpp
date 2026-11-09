@@ -37,7 +37,6 @@ std::optional<u64> ParseBuildNumber(std::string_view tag) {
 // Linux AppImages are published by the fork that ports them, under their own tags.
 constexpr std::string_view ReleaseOwner = "Benjaminvdw";
 constexpr std::string_view ReleaseRepo = "Benjaminvdw/Fritchii";
-constexpr std::array RepoNames{std::string_view{"Fritchii"}};
 constexpr std::array TagPrefixes{std::string_view{"fritchii-linux-v"}};
 #else
 constexpr std::string_view ReleaseOwner = "Frizti";
@@ -46,6 +45,29 @@ constexpr std::string_view ReleaseRepo = "Frizti/Lichii";
 constexpr std::array RepoNames{std::string_view{"Lichii"}, std::string_view{"Fritchii"}};
 constexpr std::array TagPrefixes{std::string_view{"fritchii-v"}, std::string_view{"frizti-v"}};
 #endif
+
+bool IsReleaseDownload(std::string_view url, std::string_view tag, std::string_view filename) {
+#ifdef FRITCHII_APPIMAGE
+    // Any repository of the owner: download URLs name the current one, so builds keep updating
+    // after the fork is renamed.
+    const auto prefix = fmt::format("https://github.com/{}/", ReleaseOwner);
+    const auto suffix = fmt::format("/releases/download/{}/{}", tag, filename);
+    if (url.size() <= prefix.size() + suffix.size() || !url.starts_with(prefix) ||
+        !url.ends_with(suffix)) {
+        return false;
+    }
+    const auto repo = url.substr(prefix.size(), url.size() - prefix.size() - suffix.size());
+    return repo.find("..") == std::string_view::npos &&
+           std::ranges::all_of(repo, [](unsigned char c) {
+               return std::isalnum(c) != 0 || c == '-' || c == '_' || c == '.';
+           });
+#else
+    return std::ranges::any_of(RepoNames, [&](std::string_view repo) {
+        return url == fmt::format("https://github.com/{}/{}/releases/download/{}/{}", ReleaseOwner,
+                                  repo, tag, filename);
+    });
+#endif
+}
 
 std::optional<u32> ParseNumber(std::string_view text) {
     if (text.empty() || (text.size() > 1 && text.front() == '0') ||
@@ -264,11 +286,8 @@ std::optional<Common::Net::Asset> SelectFritchiiAsset(const Common::Net::Release
                 origin = source.origin;
             }
         } else {
-            for (const auto repo : RepoNames) {
-                if (url == fmt::format("https://github.com/{}/{}/releases/download/{}/{}",
-                                       ReleaseOwner, repo, release.tag, filename)) {
-                    origin = "https://github.com";
-                }
+            if (IsReleaseDownload(url, release.tag, filename)) {
+                origin = "https://github.com";
             }
         }
         if (origin.empty()) {

@@ -22,12 +22,14 @@ That's one game on one PC so far. Other games and AMD or Intel GPUs are untested
 
 ## Download
 
-**[Get the latest release](https://github.com/Benjaminvdw/Fritchii/releases/tag/fritchii-linux-v5.5)**
+**[Get the latest release](https://github.com/Benjaminvdw/Fritchii/releases/tag/fritchii-linux-v5.6)**
 
 ```bash
-chmod +x Fritchii-v5.5-Linux-x86_64.AppImage
-./Fritchii-v5.5-Linux-x86_64.AppImage
+chmod +x Fritchii-v5.6-Linux-x86_64.AppImage
+./Fritchii-v5.6-Linux-x86_64.AppImage
 ```
+
+Linux v5.6 is Fritchii v5.5 plus a Linux-only updater change. There is no Fritchii v5.6 for Windows behind it, so Linux version numbers can run ahead of Fritchii's.
 
 The first start prepares shaders once, which takes about 15 minutes.
 
@@ -41,7 +43,7 @@ On a Wayland desktop the first start shows a "Wayland Detected!" warning. Fritch
 - A working Vulkan driver
 - Normal desktop audio (ALSA)
 
-The v5 AppImage started on Ubuntu 24.04, Debian 13, Fedora 45 and Arch. The v5.3 AppImage has been started on Debian 13 and CachyOS, v5.4 on CachyOS, and v5.5 in an Ubuntu 24.04 container.
+The v5 AppImage started on Ubuntu 24.04, Debian 13, Fedora 45 and Arch. The v5.3 AppImage has been started on Debian 13 and CachyOS, v5.4 on CachyOS, and v5.5 and v5.6 in an Ubuntu 24.04 container.
 
 ## Updates
 

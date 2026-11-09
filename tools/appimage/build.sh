@@ -18,6 +18,8 @@ if [ "${1:-}" != "--inside-container" ]; then
 fi
 
 version=$(tr -d '[:space:]' < dist/frizti_version.txt)
+# The Fritchii release to take recipes from. A Linux-only version number can be ahead of it.
+recipes_version=5.5
 output="Fritchii-v$version-Linux-x86_64.AppImage"
 build=build/appimage
 tools=build/appimage-tools
@@ -86,9 +88,9 @@ done
 rm -rf "$appdir"
 # The shader preparation recipes ship only in the Windows release. The program reads them from
 # recipes/ next to itself.
-zip="$tools/windows-release-v$version.zip"
+zip="$tools/windows-release-v$recipes_version.zip"
 [ -s "$zip" ] || curl -fsSL -o "$zip" \
-    "https://github.com/Frizti/Fritchii/releases/download/fritchii-v$version/Fritchii-v$version-Windows-x64.zip"
+    "https://github.com/Frizti/Fritchii/releases/download/fritchii-v$recipes_version/Fritchii-v$recipes_version-Windows-x64.zip"
 mkdir -p "$appdir/usr/bin/recipes"
 unzip -j -o "$zip" '*/recipes/*' -d "$appdir/usr/bin/recipes"
 linuxdeploy-x86_64.AppImage --appdir "$appdir" \
